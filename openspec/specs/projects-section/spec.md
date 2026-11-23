@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Presents four production case studies directly on the CV landing page so a recruiter can see deliverables and outcomes before reading the chronological experience timeline, using CV facts already on the page and one local placeholder image until real project data and images are supplied.
+Presents verified production projects directly on the CV landing page so a recruiter can see deliverables and outcomes before reading the chronological experience timeline, starting with one real entry and leaving room for more as verified project data and images are supplied.
 
 ## Requirements
 
@@ -20,28 +20,28 @@ The page SHALL include a dedicated section titled "Featured Projects & Solutions
 - **WHEN** a visitor opens the page with the projects fragment in the URL
 - **THEN** the browser scrolls to the featured projects section
 
-### Requirement: Four featured case studies
+### Requirement: Featured case studies
 
-The section SHALL present exactly four case-study entries covering the TCS insurance platform, the Brilla Group payment gateway, the Colima judicial platform, and the Iberdrola fraud monitoring dashboard. Each entry SHALL expose a category label, a client or organization with period, a title, a narrative, three highlight items, a set of technology labels, and a local placeholder image covering the full card behind a left-to-right token-based gradient scrim, with content aligned left and the right side of the image visible.
+The section SHALL present at least one case-study entry using verified real project data and SHALL support adding more entries as they are verified. Each entry SHALL expose a category label, a client or organization with status or period, a title, a narrative, three highlight items, a set of technology labels, and a local placeholder image covering the full card behind a left-to-right token-based gradient scrim, with content aligned left and the right side of the image visible.
 
 #### Scenario: Case studies are visible
 
 - **WHEN** the projects section is viewed on a desktop viewport
-- **THEN** four distinct case-study entries are visible, each with its category, client, title, narrative, three highlights, technology labels, and a full-card local placeholder background with a left-to-right gradient scrim and left-aligned content
+- **THEN** every case-study entry is visible with its category, client, status or period, title, narrative, three highlights, technology labels, and a full-card local placeholder background with a left-to-right gradient scrim and left-aligned content
 
-#### Scenario: Entry links to its career role
+#### Scenario: Entry links to its project site
 
-- **WHEN** a visitor activates the "View Career Role" link on the TCS entry
-- **THEN** the browser navigates to the experience section where the corresponding role is documented
+- **WHEN** a visitor activates the "View site" link on the Fresnal Comala entry
+- **THEN** the browser opens the verified Fresnal Comala project site
 
 ### Requirement: Content fidelity
 
-Case-study narratives and labels SHALL describe only work and technologies already documented in the page's experience or technical-stack sections. The section SHALL NOT introduce new quantified claims, tool versions, client descriptors, or runtime characteristics that are absent from those sources. Placeholder imagery SHALL NOT introduce client logos, claims, or metrics, and supplying real project data and images is out of scope for this change.
+Case-study narratives and labels SHALL describe only verified real project data supplied for the section. The section SHALL NOT introduce new quantified claims, tool versions, client descriptors, or runtime characteristics that are unsupported by the supplied data. Placeholder imagery SHALL NOT introduce client logos, claims, or metrics until a verified real project image is supplied.
 
-#### Scenario: Claims match existing CV content
+#### Scenario: Claims match supplied project content
 
-- **WHEN** each case-study narrative is compared with the experience and technical-stack content
-- **THEN** every stated technology, client, timeframe, and outcome is supported by the existing content
+- **WHEN** each case-study narrative is compared with the supplied project details
+- **THEN** every stated technology, client, status or timeframe, and outcome is supported by the supplied details
 
 #### Scenario: Placeholder adds no claims
 
@@ -93,7 +93,7 @@ The page navigation SHALL include a link targeting the featured projects section
 #### Scenario: JavaScript unavailable
 
 - **WHEN** the page is loaded with JavaScript disabled
-- **THEN** all four case studies, their highlights, their technology labels, and their placeholder media are visible without any permanently hidden or placeholder-only loading state
+- **THEN** all case studies, their highlights, their technology labels, and their placeholder media are visible without any permanently hidden or placeholder-only loading state
 
 ### Requirement: Responsive and accessible presentation
 
