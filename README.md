@@ -1,6 +1,6 @@
 # my-cv-page
 
-CV representation in web page to apply for job.
+Web portfolio at `/` and recruiter CV at `/cv/`, sharing one static asset set and one verified profile dataset.
 
 ## Stack
 
@@ -11,7 +11,9 @@ CV representation in web page to apply for job.
 
 ```
 web-cv/
-├── index.html            # Main page markup (semantic sections)
+├── index.html            # Portfolio page markup at /
+├── cv/
+│   └── index.html        # Recruiter web CV markup at /cv/
 ├── styles/
 │   ├── style.css         # Entry point: @imports the section stylesheets
 │   ├── base.css          # Design tokens, reset, typography, icon font
@@ -19,8 +21,9 @@ web-cv/
 │   ├── sections.css      # Main layout and shared section backgrounds
 │   ├── hero.css          # Hero section
 │   ├── experience.css    # Experience section
+│   ├── experience-reveal.css # Portfolio reveal control
 │   ├── skills.css        # Skills section
-│   ├── projects.css      # Featured projects section
+│   ├── projects.css      # Projects section
 │   ├── certifications.css
 │   ├── interests.css
 │   ├── footer.css
@@ -29,6 +32,7 @@ web-cv/
 │   └── utilities.css     # Focus states and helper utility classes
 ├── scripts/
 │   ├── main.js           # Entry point: imports and boots the handlers
+│   ├── experienceReveal.js # Progressive experience disclosure for /
 │   ├── nav.js            # Navigation / smooth scroll
 │   ├── icons.js          # Social, share, and download icons
 │   ├── certifications.js # Certification interactions
@@ -38,7 +42,7 @@ web-cv/
 │   ├── services/
 │   │   └── geminiService.js  # Gemini request, prompt, and validation
 │   ├── data/
-│   │   └── cvProfile.js      # Curated CV profile for AI comparison
+│   │   └── cvProfile.js      # Shared facts with candidate and portfolio variants
 │   └── utils/
 │       ├── smoothScroll.js
 │       └── handleKeyboardNavigation.js
@@ -61,23 +65,36 @@ web-cv/
   responsive overrides and utilities last).
 - **No external dependencies.** Keep everything browser-native.
 - **Project imagery is swappable.** Replace `images/projects/project-placeholder.svg` in the project cards with real local images and verified copy; no JavaScript or dependency changes are needed.
+- **Two entry points, one asset set.** Keep visible HTML in both `index.html` and `cv/index.html`; share all styles, scripts, and images from the root folders.
+- **One-way discovery.** The portfolio footer links to `/cv/`; the recruiter page intentionally has no Portfolio menu or footer link.
+- **Recruiter project framing.** On `/cv/`, projects come after experience and are presented as side projects or learning experiments, not concurrent commercial work.
+- **Audience-specific data.** Use the `candidateProfile` variant for recruiter AI comparison and `portfolioProfile` for any future portfolio-side feature; shared facts come from one module.
 
 ## Running locally
 
-Open `index.html` directly, or serve the folder to enable ES module loading
-over `file://`-restricted browsers:
+Serve the folder to enable ES module loading over `file://`-restricted browsers:
 
 ```bash
 python3 -m http.server 8080
 ```
 
+Then open:
+
+- `http://localhost:8080/` for the portfolio.
+- `http://localhost:8080/cv/` for the recruiter CV.
+
+The portfolio keeps experience content in served HTML. Without JavaScript it is
+visible; with JavaScript it is collapsed after load and toggled by the
+`Background experience` control.
+
 ## AI vacancy match
 
-The hero "Match a vacancy" button opens a dialog where a recruiter pastes a
-vacancy and receives an AI comparison against the curated profile in
-`scripts/data/cvProfile.js`. Requests go directly from the browser to the Google
-Gemini API, so the API key is part of the deployed artifact. Treat the key as
-public.
+The recruiter CV hero "Match a vacancy" button opens a dialog where a recruiter
+pastes a vacancy and receives an AI comparison against the `candidateProfile`
+variant in `scripts/data/cvProfile.js`. The portfolio has no vacancy-match
+control and does not load the AI comparison module or generated config. Requests
+go directly from the browser to the Google Gemini API, so the API key is part of
+the deployed artifact. Treat the key as public.
 
 The key is never committed. `scripts/config.js` is gitignored and is generated
 for deployment by `.github/workflows/pages.yml` from the `GEMINI_API_KEY`

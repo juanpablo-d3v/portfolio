@@ -1,4 +1,4 @@
-import { serializeProfile } from '../data/cvProfile.js';
+import { candidateProfile, serializeProfile } from '../data/cvProfile.js';
 
 const API_BASE = 'https://generativelanguage.googleapis.com/v1beta/models';
 const DEFAULT_MODEL = 'gemini-3.5-flash-lite';
@@ -47,7 +47,7 @@ export function buildPrompt(vacancyText) {
     'Return a JSON object with: score (integer from 0 to 100), verdict (strong, partial, or weak), matchedSkills (array of strings), gaps (array of strings), and rationale (one or two short sentences).',
     '',
     'Candidate profile:',
-    serializeProfile(),
+    serializeProfile(candidateProfile),
     '',
     'Vacancy to evaluate:',
     '<vacancy>',

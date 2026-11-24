@@ -109,42 +109,61 @@ const languages = Object.freeze([
   Object.freeze({ name: 'English', level: 'Professional' }),
 ]);
 
-const cvProfile = Object.freeze({
+const sharedFacts = Object.freeze({
   name: 'JuanPablo Dev',
-  headline:
-    'Systems Engineer with 12+ years of experience delivering enterprise web development solutions',
   yearsOfExperience: 12,
-  availability: 'Open to frontend and full-stack engineering roles',
   skillGroups,
   roles,
   certifications,
   languages,
 });
 
-export function serializeProfile() {
+const candidateProfile = Object.freeze({
+  ...sharedFacts,
+  headline:
+    'Systems Engineer with 12+ years of experience delivering enterprise web development solutions',
+  availability: 'Open to frontend and full-stack engineering roles',
+});
+
+const portfolioProfile = Object.freeze({
+  ...sharedFacts,
+  headline:
+    'Systems Engineer delivering enterprise web development solutions for multidisciplinary teams',
+  focus:
+    'Enterprise web delivery, full-stack Angular and Node.js platforms, serverless APIs and production data workflows',
+});
+
+export function serializeProfile(profile = candidateProfile) {
   const lines = [
-    `Candidate: ${cvProfile.name}`,
-    `Headline: ${cvProfile.headline}`,
-    `Years of experience: ${cvProfile.yearsOfExperience}+`,
-    `Availability: ${cvProfile.availability}`,
-    '',
-    'Skill groups:',
+    `Candidate: ${profile.name}`,
+    `Headline: ${profile.headline}`,
+    `Years of experience: ${profile.yearsOfExperience}+`,
   ];
 
-  for (const group of cvProfile.skillGroups) {
+  if (profile.availability) {
+    lines.push(`Availability: ${profile.availability}`);
+  }
+
+  if (profile.focus) {
+    lines.push(`Focus: ${profile.focus}`);
+  }
+
+  lines.push('', 'Skill groups:');
+
+  for (const group of profile.skillGroups) {
     lines.push(`- ${group.name} (${group.level}): ${group.skills.join(', ')}`);
   }
 
   lines.push('', 'Recent roles:');
 
-  for (const role of cvProfile.roles) {
+  for (const role of profile.roles) {
     lines.push(`- ${role.title} at ${role.company} (${role.period}): ${role.outcome}`);
   }
 
   lines.push(
     '',
-    `Certifications: ${cvProfile.certifications.join('; ')}`,
-    `Languages: ${cvProfile.languages
+    `Certifications: ${profile.certifications.join('; ')}`,
+    `Languages: ${profile.languages
       .map((language) => `${language.name} (${language.level})`)
       .join(', ')}`,
   );
@@ -152,5 +171,6 @@ export function serializeProfile() {
   return lines.join('\n');
 }
 
-export { cvProfile };
-export default cvProfile;
+export { candidateProfile, portfolioProfile };
+export { candidateProfile as cvProfile };
+export default candidateProfile;
