@@ -49,7 +49,7 @@ jobs:
         run: |
           set -eu
           mkdir -p _site
-          cp -R index.html styles scripts images assets ResumeJPSM.pdf _site/
+          cp -R index.html cv styles scripts images assets ResumeJPSM.pdf _site/
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
