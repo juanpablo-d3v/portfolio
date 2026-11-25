@@ -41,12 +41,17 @@ Both entry points SHALL use the same design tokens, stylesheet collection, image
 
 ### Requirement: Audience-specific navigation and calls to action
 
-The portfolio page SHALL prioritize hero, selected work, technical skills, a discreet background-experience reveal, and a project-discussion contact path. Its hero SHALL NOT present the vacancy comparison control or LinkedIn option, and its header SHALL NOT present the download-resume control. The recruiter page SHALL prioritize vacancy comparison, technical skills, work history, projects, certifications, communication details, and CV download. The portfolio page SHALL include a discoverable cross-link to the recruiter page. The recruiter page SHALL NOT include a Portfolio menu item or footer cross-link.
+The portfolio page SHALL prioritize hero, a client-facing services menu, selected work, technical skills, a discreet background-experience reveal, and a project-discussion contact path. Its header SHALL include a "Services" navigation link targeting the services section. Its hero SHALL NOT present the vacancy comparison control or LinkedIn option, and its header SHALL NOT present the download-resume control. The recruiter page SHALL prioritize vacancy comparison, technical skills, work history, projects, certifications, communication details, and CV download. The portfolio page SHALL include a discoverable cross-link to the recruiter page. The recruiter page SHALL NOT include a Portfolio menu item, Services menu item, or footer cross-link.
 
 #### Scenario: Portfolio call to action
 
 - **WHEN** a visitor reviews the portfolio page
 - **THEN** the primary contact action invites a project discussion and no vacancy comparison entry point is presented
+
+#### Scenario: Portfolio services navigation
+
+- **WHEN** a visitor activates the "Services" navigation link on the portfolio page
+- **THEN** the Services section is brought into view
 
 #### Scenario: Portfolio hero and header controls
 
@@ -66,7 +71,7 @@ The portfolio page SHALL prioritize hero, selected work, technical skills, a dis
 #### Scenario: Recruiter page has no portfolio cross-link
 
 - **WHEN** the recruiter page is inspected
-- **THEN** no menu or footer link to the portfolio page is presented
+- **THEN** no menu or footer link to the portfolio page is presented and no Services menu item is presented
 
 ### Requirement: Progressive background experience reveal
 
