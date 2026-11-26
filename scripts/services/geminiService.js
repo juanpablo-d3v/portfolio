@@ -1,8 +1,12 @@
 import { candidateProfile, serializeProfile } from '../data/cvProfile.js';
+import {
+  API_BASE,
+  DEFAULT_MODEL,
+  GeminiRequestError,
+  REQUEST_TIMEOUT_MS,
+  requestStructuredContent,
+} from './geminiRequest.js';
 
-const API_BASE = 'https://generativelanguage.googleapis.com/v1beta/models';
-const DEFAULT_MODEL = 'gemini-3.5-flash-lite';
-const REQUEST_TIMEOUT_MS = 30000;
 const MAX_VACANCY_LENGTH = 2000;
 
 const RESULT_SCHEMA = {
@@ -56,48 +60,6 @@ export function buildPrompt(vacancyText) {
   ].join('\n');
 }
 
-async function loadConfig() {
-  let module;
-
-  try {
-    module = await import('../config.js');
-  } catch {
-    throw new JobMatchError('config', 'AI configuration is missing');
-  }
-
-  const config = module.config ?? module.default ?? module;
-
-  if (!config || typeof config.apiKey !== 'string' || !config.apiKey.trim()) {
-    throw new JobMatchError('config', 'AI configuration is missing an API key');
-  }
-
-  return {
-    apiKey: config.apiKey.trim(),
-    model:
-      typeof config.model === 'string' && config.model.trim()
-        ? config.model.trim()
-        : DEFAULT_MODEL,
-  };
-}
-
-function extractResultText(payload) {
-  const parts = payload?.candidates?.[0]?.content?.parts;
-
-  if (!Array.isArray(parts)) {
-    throw new JobMatchError('invalid', 'AI response contained no candidate');
-  }
-
-  const text = parts
-    .map((part) => (typeof part?.text === 'string' ? part.text : ''))
-    .join('');
-
-  if (!text.trim()) {
-    throw new JobMatchError('invalid', 'AI response was empty');
-  }
-
-  return text;
-}
-
 export function validateResult(text) {
   let data;
 
@@ -149,72 +111,23 @@ export async function compareVacancy(vacancyText, options = {}) {
   }
 
   const text = source.slice(0, MAX_VACANCY_LENGTH);
-  const { apiKey, model } = await loadConfig();
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
-  const externalSignal = options.signal;
-  const abortFromExternal = () => controller.abort();
-
-  if (externalSignal) {
-    if (externalSignal.aborted) {
-      controller.abort();
-    } else {
-      externalSignal.addEventListener('abort', abortFromExternal, { once: true });
-    }
-  }
 
   try {
-    const response = await fetch(
-      `${API_BASE}/${encodeURIComponent(model)}:generateContent`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-goog-api-key': apiKey,
-        },
-        body: JSON.stringify({
-          contents: [{ role: 'user', parts: [{ text: buildPrompt(text) }] }],
-          generationConfig: {
-            temperature: 0.2,
-            maxOutputTokens: 800,
-            responseMimeType: 'application/json',
-            responseSchema: RESULT_SCHEMA,
-          },
-        }),
-        signal: controller.signal,
-      },
-    );
+    const resultText = await requestStructuredContent({
+      prompt: buildPrompt(text),
+      schema: RESULT_SCHEMA,
+      temperature: 0.2,
+      maxOutputTokens: 800,
+      signal: options.signal,
+    });
 
-    if (!response.ok) {
-      const code = response.status === 429 ? 'quota' : 'http';
-      throw new JobMatchError(code, `AI request failed with status ${response.status}`);
-    }
-
-    let payload;
-
-    try {
-      payload = await response.json();
-    } catch {
-      throw new JobMatchError('invalid', 'AI response was not valid JSON');
-    }
-
-    return validateResult(extractResultText(payload));
+    return validateResult(resultText);
   } catch (error) {
-    if (error instanceof JobMatchError) {
-      throw error;
-    }
-
-    if (error?.name === 'AbortError') {
-      throw new JobMatchError('timeout', 'AI request timed out');
+    if (error instanceof GeminiRequestError) {
+      throw new JobMatchError(error.code, error.message);
     }
 
     throw new JobMatchError('network', 'AI request could not be completed');
-  } finally {
-    clearTimeout(timeoutId);
-
-    if (externalSignal) {
-      externalSignal.removeEventListener('abort', abortFromExternal);
-    }
   }
 }
 

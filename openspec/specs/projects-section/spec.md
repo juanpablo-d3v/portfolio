@@ -8,7 +8,7 @@ Presents verified production projects directly on the CV landing page so a recru
 
 ### Requirement: Featured projects section
 
-The portfolio page SHALL include a dedicated section titled "Featured Projects & Solutions" with an accessible name and a URL fragment for direct navigation. It SHALL appear immediately after the hero and before technical skills as primary proof. The recruiter page SHALL include the same URL fragment in a section titled "Side Projects & Learning Experiments", placed after the experience timeline. Its copy SHALL frame the work as personal side projects or learning experiments and SHALL NOT imply concurrent commercial work alongside the candidate's current employment.
+The portfolio page SHALL include a dedicated section titled "Featured Projects & Solutions" with an accessible name and a URL fragment for direct navigation. It SHALL appear immediately after the Services section and before technical skills as primary proof. The recruiter page SHALL include the same URL fragment in a section titled "Side Projects & Learning Experiments", placed after the experience timeline. Its copy SHALL frame the work as personal side projects or learning experiments and SHALL NOT imply concurrent commercial work alongside the candidate's current employment.
 
 #### Scenario: Section location and heading
 
@@ -18,7 +18,7 @@ The portfolio page SHALL include a dedicated section titled "Featured Projects &
 #### Scenario: Portfolio section location
 
 - **WHEN** the portfolio page is inspected in document order
-- **THEN** the projects section appears between the hero and the technical skills section and contains a level-two heading "Featured Projects & Solutions"
+- **THEN** the projects section appears between the Services section and the technical skills section and contains a level-two heading "Featured Projects & Solutions"
 
 #### Scenario: Recruiter section location
 
