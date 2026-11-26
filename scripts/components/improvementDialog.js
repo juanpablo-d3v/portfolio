@@ -1,4 +1,5 @@
-import { getBenefitLabels, getServiceByName } from '../data/serviceCatalog.js';
+import { getBenefitLabels, getServiceByName, getServiceLabel } from '../data/serviceCatalog.js';
+import { getLocale, getLocaleStrings } from '../data/localeStrings.js';
 import {
   ImprovementError,
   MAX_IMPROVEMENT_LENGTH,
@@ -8,20 +9,11 @@ import {
 const COOLDOWN_MS = 20000;
 const COOLDOWN_KEY = 'jp-improvement-match-last-submit';
 const EMAIL_ADDRESS = 'hello@juanpablo.dev';
-const EMAIL_SUBJECT = 'Improvement Inquiry';
-
-const FAILURE_MESSAGES = {
-  config: 'Improvement guidance is unavailable right now. You can still email me directly.',
-  network: 'Improvement guidance could not reach the service. Please try again, or email me directly.',
-  quota: 'The AI service is busy right now. Please try again later, or email me directly.',
-  http: 'Improvement guidance is unavailable right now. You can still email me directly.',
-  timeout: 'Improvement guidance took too long to respond. Please try again, or email me directly.',
-  invalid: 'The AI response could not be read. Please try again, or email me directly.',
-  input: 'Describe what you would like to improve.',
-};
 
 class ImprovementDialog {
   constructor() {
+    this.locale = getLocale();
+    this.strings = getLocaleStrings('improvement');
     this.trigger = document.querySelector('[data-improvement-open]');
     this.dialog = document.getElementById('improvement-dialog');
     this.inputView = document.getElementById('improvement-view-input');
@@ -44,9 +36,18 @@ class ImprovementDialog {
     this.whyItFits = document.getElementById('improvement-why-fits');
     this.benefits = document.getElementById('improvement-benefits');
     this.questions = document.getElementById('improvement-questions');
+    this.questionsNote = document.getElementById('improvement-questions-note');
     this.firstStep = document.getElementById('improvement-first-step');
     this.emailBrief = document.getElementById('improvement-email-brief');
     this.anotherButton = document.querySelector('[data-improvement-another]');
+    this.dialogTitle = document.getElementById('improvement-title');
+    this.dialogSubtitle = document.querySelector('.improvement-subtitle');
+    this.privacy = document.getElementById('improvement-privacy');
+    this.inputLabel = document.querySelector('.improvement-label');
+    this.benefitsHeading = document.getElementById('improvement-benefits-title');
+    this.questionsHeading = document.getElementById('improvement-questions-title');
+    this.firstStepHeading = document.getElementById('improvement-first-step-title');
+    this.mailtoLinks = document.querySelectorAll('#improvement-dialog a[href^="mailto:"]');
     this.cooldownTimer = null;
     this.cooldownUntil = 0;
     this.loading = false;
@@ -74,10 +75,54 @@ class ImprovementDialog {
       return;
     }
 
+    this.applyStaticStrings();
     this.setView('input');
     this.initializeDialog();
     this.initializeForm();
     this.restoreCooldown();
+  }
+
+  applyStaticStrings() {
+    if (this.dialogTitle) {
+      this.dialogTitle.textContent = this.strings.dialogTitle;
+    }
+    if (this.dialogSubtitle) {
+      this.dialogSubtitle.textContent = this.strings.dialogSubtitle;
+    }
+    if (this.privacy) {
+      this.privacy.textContent = this.strings.privacy;
+    }
+    if (this.inputLabel) {
+      this.inputLabel.textContent = this.strings.inputLabel;
+    }
+    if (this.closeButton) {
+      this.closeButton.setAttribute('aria-label', this.strings.close);
+    }
+    if (this.benefitsHeading) {
+      this.benefitsHeading.textContent = this.strings.benefitsTitle;
+    }
+    if (this.questionsHeading) {
+      this.questionsHeading.textContent = this.strings.questionsTitle;
+    }
+    if (this.firstStepHeading) {
+      this.firstStepHeading.textContent = this.strings.firstStepTitle;
+    }
+    if (this.questionsNote) {
+      this.questionsNote.textContent = this.strings.questionsNote;
+    }
+    if (this.retryButton) {
+      this.retryButton.textContent = this.strings.retry;
+    }
+
+    this.input.placeholder = this.strings.placeholder;
+    this.loadingMessage.textContent = this.strings.loading;
+    this.resultTitle.textContent = this.strings.resultTitle;
+    this.anotherButton.textContent = this.strings.startAnother;
+    this.emailBrief.textContent = this.strings.emailBrief;
+
+    for (const link of this.mailtoLinks) {
+      link.href = this.buildMailtoHref();
+    }
   }
 
   initializeDialog() {
@@ -154,7 +199,7 @@ class ImprovementDialog {
     const limitReached = length >= MAX_IMPROVEMENT_LENGTH;
 
     this.counter.textContent = limitReached
-      ? `${length} / ${MAX_IMPROVEMENT_LENGTH} (limit reached)`
+      ? `${length} / ${MAX_IMPROVEMENT_LENGTH} ${this.strings.counterLimit}`
       : `${length} / ${MAX_IMPROVEMENT_LENGTH}`;
     this.counter.classList.toggle('is-limit', limitReached);
   }
@@ -169,7 +214,7 @@ class ImprovementDialog {
     const text = this.input.value.trim();
 
     if (!text) {
-      this.showFieldError(FAILURE_MESSAGES.input);
+      this.showFieldError(this.strings.validation);
       this.input.focus();
       return;
     }
@@ -178,7 +223,9 @@ class ImprovementDialog {
     const generation = this.prepareRequest();
 
     try {
-      const result = await improveGoal(text.slice(0, MAX_IMPROVEMENT_LENGTH));
+      const result = await improveGoal(text.slice(0, MAX_IMPROVEMENT_LENGTH), {
+        locale: this.locale,
+      });
 
       if (generation !== this.generation) {
         return;
@@ -215,23 +262,26 @@ class ImprovementDialog {
     const service = getServiceByName(result.primaryService);
 
     this.understoodGoal.textContent = result.understoodGoal;
-    this.primaryService.textContent = result.primaryService;
+    this.primaryService.textContent = getServiceLabel(service, this.locale);
     this.whyItFits.textContent = result.whyItFits;
-    this.renderList(this.benefits, getBenefitLabels(service, result.benefitKeys));
+    this.renderList(
+      this.benefits,
+      getBenefitLabels(service, result.benefitKeys, this.locale),
+    );
     this.renderList(this.questions, [...result.clarifyingQuestions]);
     this.firstStep.textContent = result.suggestedFirstStep;
     this.emailBrief.href = this.buildMailtoHref(
       this.buildEmailBrief(result, service, visitorText),
     );
     this.setView('result');
-    this.setStatus('Service guidance ready.');
+    this.setStatus(this.strings.statusReady);
     this.resultTitle.focus();
   }
 
   showFailure(error) {
     const code = error instanceof ImprovementError ? error.code : 'invalid';
 
-    this.fallbackMessage.textContent = FAILURE_MESSAGES[code] ?? FAILURE_MESSAGES.invalid;
+    this.fallbackMessage.textContent = this.strings.failures[code] ?? this.strings.failures.invalid;
     this.clearResult();
     this.fallback.hidden = false;
     this.setView('input');
@@ -282,7 +332,7 @@ class ImprovementDialog {
     this.benefits.replaceChildren();
     this.questions.replaceChildren();
     this.firstStep.textContent = '';
-    this.emailBrief.href = `mailto:${EMAIL_ADDRESS}?subject=${encodeURIComponent(EMAIL_SUBJECT)}`;
+    this.emailBrief.href = this.buildMailtoHref();
   }
 
   renderList(list, items) {
@@ -296,29 +346,32 @@ class ImprovementDialog {
   }
 
   buildEmailBrief(result, service, visitorText) {
-    const benefitLabels = getBenefitLabels(service, result.benefitKeys);
+    const benefitLabels = getBenefitLabels(service, result.benefitKeys, this.locale);
+    const serviceLabel = getServiceLabel(service, this.locale);
 
     return [
-      'Here is what I would like to improve:',
+      this.strings.emailIntro,
       visitorText,
       '',
-      `Understood goal: ${result.understoodGoal}`,
-      `Suggested service: ${result.primaryService}`,
-      `Why it may help: ${result.whyItFits}`,
+      `${this.strings.goalLabel} ${result.understoodGoal}`,
+      `${this.strings.serviceLabel} ${serviceLabel}`,
+      `${this.strings.fitLabel} ${result.whyItFits}`,
       '',
-      'Relevant benefits:',
+      this.strings.benefitsTitle,
       ...benefitLabels.map((label) => `- ${label}`),
       '',
-      'Questions to answer in your email:',
-      'Answer any that apply in the email you send; no new inquiry is needed.',
+      this.strings.questionsTitle,
+      this.strings.questionsNote,
       ...result.clarifyingQuestions.map((question) => `- ${question}`),
       '',
-      `Suggested first step: ${result.suggestedFirstStep}`,
+      `${this.strings.firstStepLabel} ${result.suggestedFirstStep}`,
     ].join('\n');
   }
 
   buildMailtoHref(body) {
-    return `mailto:${EMAIL_ADDRESS}?subject=${encodeURIComponent(EMAIL_SUBJECT)}&body=${encodeURIComponent(body)}`;
+    const subject = encodeURIComponent(this.strings.subject);
+    const suffix = body ? `&body=${encodeURIComponent(body)}` : '';
+    return `mailto:${EMAIL_ADDRESS}?subject=${subject}${suffix}`;
   }
 
   showFieldError(message) {
@@ -346,12 +399,12 @@ class ImprovementDialog {
   syncSubmitControl() {
     const coolingDown = this.isCoolingDown();
     const unavailable = this.loading || coolingDown;
-    let label = 'Find the right service';
+    let label = this.strings.submit;
 
     if (this.loading) {
-      label = 'Finding service...';
+      label = this.strings.submitLoading;
     } else if (coolingDown) {
-      label = `Find the right service (${this.remainingCooldownSeconds()}s)`;
+      label = this.strings.submitCooldown(this.remainingCooldownSeconds());
     }
 
     this.submitButton.textContent = label;

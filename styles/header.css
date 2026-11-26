@@ -102,8 +102,15 @@ nav button:hover {
 }
 
 .header-icons .material-symbols-outlined:hover,
-.header-icons .header-icon-link:hover {
+.header-icons .header-icon-link:hover,
+.header-icons .header-lang-link:hover {
   opacity: 0.8;
+}
+
+.header-icons .header-lang-link {
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
 }
 
 @media (min-width: 768px) {
