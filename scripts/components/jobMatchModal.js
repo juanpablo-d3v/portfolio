@@ -4,32 +4,15 @@ import {
   MAX_VACANCY_LENGTH,
   verdictFromScore,
 } from '../services/geminiService.js';
+import { getLocale, getLocaleStrings } from '../data/localeStrings.js';
 
 const COOLDOWN_MS = 20000;
 const COOLDOWN_KEY = 'jp-job-match-last-submit';
 
-const VERDICT_LABELS = {
-  strong: 'Strong match',
-  partial: 'Partial match',
-  weak: 'Weak match',
-};
-
-const FAILURE_MESSAGES = {
-  config: 'AI comparison is unavailable right now. You can still email me or download my CV.',
-  network:
-    'AI comparison could not reach the service. Please try again, or email me or download my CV.',
-  quota:
-    'The AI service is busy right now. Please try again later, or email me or download my CV.',
-  http: 'AI comparison is unavailable right now. You can still email me or download my CV.',
-  timeout:
-    'AI comparison took too long to respond. Please try again, or email me or download my CV.',
-  invalid:
-    'The AI response could not be read. Please try again, or email me or download my CV.',
-  input: 'Paste the vacancy text to compare.',
-};
-
 class JobMatchModal {
   constructor() {
+    this.locale = getLocale();
+    this.strings = getLocaleStrings('jobMatch');
     this.trigger = document.querySelector('[data-job-match-open]');
     this.dialog = document.getElementById('job-match-dialog');
     this.inputView = document.getElementById('job-match-view-input');
@@ -52,6 +35,17 @@ class JobMatchModal {
     this.rationale = document.getElementById('job-match-rationale');
     this.fallback = document.getElementById('job-match-fallback');
     this.fallbackMessage = document.getElementById('job-match-fallback-message');
+    this.title = document.getElementById('job-match-title');
+    this.subtitle = document.querySelector('.job-match-subtitle');
+    this.privacy = document.getElementById('job-match-privacy');
+    this.label = document.querySelector('.job-match-label');
+    this.disclaimer = document.querySelector('.job-match-disclaimer');
+    this.resultHeadings = document.querySelectorAll('#job-match-result .job-match-result-block h4');
+    this.emailInsteadLinks = document.querySelectorAll(
+      '#job-match-view-input .job-match-secondary[href^="mailto:"]',
+    );
+    this.emailMeLinks = document.querySelectorAll('#job-match-dialog a[href^="mailto:"]');
+    this.downloadLinks = document.querySelectorAll('#job-match-dialog a[download]');
     this.cooldownTimer = null;
     this.cooldownUntil = 0;
     this.loading = false;
@@ -80,10 +74,59 @@ class JobMatchModal {
       return;
     }
 
+    this.applyStaticStrings();
     this.setView('input');
     this.initializeDialog();
     this.initializeForm();
     this.restoreCooldown();
+  }
+
+  applyStaticStrings() {
+    if (this.title) {
+      this.title.textContent = this.strings.title;
+    }
+    if (this.subtitle) {
+      this.subtitle.textContent = this.strings.subtitle;
+    }
+    if (this.privacy) {
+      this.privacy.textContent = this.strings.privacy;
+    }
+    if (this.label) {
+      this.label.textContent = this.strings.label;
+    }
+    if (this.disclaimer) {
+      this.disclaimer.textContent = this.strings.disclaimer;
+    }
+    if (this.closeButton) {
+      this.closeButton.setAttribute('aria-label', this.strings.close);
+    }
+
+    this.input.placeholder = this.strings.placeholder;
+    this.loadingMessage.textContent = this.strings.loading;
+    this.resultHeading.textContent = this.strings.resultTitle;
+    this.anotherButton.textContent = this.strings.compareAnother;
+
+    if (this.resultHeadings[0]) {
+      this.resultHeadings[0].textContent = this.strings.matchedTitle;
+    }
+    if (this.resultHeadings[1]) {
+      this.resultHeadings[1].textContent = this.strings.gapsTitle;
+    }
+    if (this.resultHeadings[2]) {
+      this.resultHeadings[2].textContent = this.strings.rationaleTitle;
+    }
+
+    for (const link of this.emailInsteadLinks) {
+      link.textContent = this.strings.emailInstead;
+    }
+    for (const link of this.emailMeLinks) {
+      if (!link.classList.contains('job-match-secondary') || !link.closest('#job-match-view-input')) {
+        link.textContent = this.strings.emailMe;
+      }
+    }
+    for (const link of this.downloadLinks) {
+      link.textContent = this.strings.downloadCv;
+    }
   }
 
   initializeDialog() {
@@ -131,7 +174,7 @@ class JobMatchModal {
     const limitReached = length >= MAX_VACANCY_LENGTH;
 
     this.counter.textContent = limitReached
-      ? `${length} / ${MAX_VACANCY_LENGTH} (limit reached)`
+      ? `${length} / ${MAX_VACANCY_LENGTH} ${this.strings.counterLimit}`
       : `${length} / ${MAX_VACANCY_LENGTH}`;
     this.counter.classList.toggle('is-limit', limitReached);
   }
@@ -146,7 +189,7 @@ class JobMatchModal {
     const text = this.input.value.trim();
 
     if (!text) {
-      this.showFieldError('Paste the vacancy text to compare.');
+      this.showFieldError(this.strings.validation);
       this.input.focus();
       return;
     }
@@ -159,7 +202,9 @@ class JobMatchModal {
     const generation = this.prepareRequest();
 
     try {
-      const result = await compareVacancy(text.slice(0, MAX_VACANCY_LENGTH));
+      const result = await compareVacancy(text.slice(0, MAX_VACANCY_LENGTH), {
+        locale: this.locale,
+      });
 
       if (generation !== this.generation) {
         return;
@@ -194,19 +239,19 @@ class JobMatchModal {
     const band = verdictFromScore(result.score);
 
     this.score.textContent = String(result.score);
-    this.verdict.textContent = VERDICT_LABELS[band];
+    this.verdict.textContent = this.strings.verdictLabels[band];
     this.verdict.dataset.band = band;
-    this.renderList(this.matched, result.matchedSkills, 'No clear matches found.');
-    this.renderList(this.gaps, result.gaps, 'No major gaps identified.');
+    this.renderList(this.matched, result.matchedSkills, this.strings.emptyMatched);
+    this.renderList(this.gaps, result.gaps, this.strings.emptyGaps);
     this.rationale.textContent = result.rationale;
     this.setView('result');
-    this.setStatus('Comparison complete.');
+    this.setStatus(this.strings.statusComplete);
     this.resultHeading.focus();
   }
 
   showFailure(error) {
     const code = error instanceof JobMatchError ? error.code : 'invalid';
-    const message = FAILURE_MESSAGES[code] ?? FAILURE_MESSAGES.invalid;
+    const message = this.strings.failures[code] ?? this.strings.failures.invalid;
 
     this.fallbackMessage.textContent = message;
     this.fallback.hidden = false;
@@ -276,12 +321,12 @@ class JobMatchModal {
 
   syncSubmitControl() {
     const unavailable = this.loading || this.isCoolingDown();
-    let label = 'Compare vacancy';
+    let label = this.strings.submit;
 
     if (this.loading) {
-      label = 'Comparing...';
+      label = this.strings.submitLoading;
     } else if (this.isCoolingDown()) {
-      label = `Compare vacancy (${this.remainingCooldownSeconds()}s)`;
+      label = this.strings.submitCooldown(this.remainingCooldownSeconds());
     }
 
     this.submitButton.textContent = label;

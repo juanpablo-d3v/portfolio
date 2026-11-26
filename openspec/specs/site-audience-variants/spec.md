@@ -8,100 +8,139 @@ Defines how the static CV site serves two audience-specific entry points while s
 
 ### Requirement: Audience-specific static entry points
 
-The site SHALL serve two static HTML entry points: a portfolio at `/` for freelance and consulting inquiries, and a recruiter web CV at `/cv/` for employment-focused visitors. Each page SHALL present complete audience-specific content in served markup and remain usable without JavaScript. The site SHALL NOT use runtime audience switching to select between the two pages.
+The site SHALL serve four static HTML entry points: an English portfolio at `/` and Spanish portfolio at `/es/` for freelance and consulting inquiries, and an English recruiter web CV at `/cv/` and Spanish recruiter web CV at `/es/cv/` for employment-focused visitors. Each page SHALL present complete audience-specific content in served markup and remain usable without JavaScript. The site SHALL NOT use runtime audience switching or runtime locale switching to select between the pages.
 
 #### Scenario: Root is the portfolio
 
 - **WHEN** a visitor opens the site root
-- **THEN** the portfolio page is served with client-facing copy and no runtime audience selector
+- **THEN** the English portfolio page is served with client-facing copy and no runtime audience or locale selector
 
 #### Scenario: Recruiter path is the web CV
 
 - **WHEN** a visitor opens `/cv/`
-- **THEN** the recruiter web CV is served with candidate-facing copy and employment-oriented actions
+- **THEN** the English recruiter web CV is served with candidate-facing copy and employment-oriented actions
+
+#### Scenario: Spanish paths are full mirrors
+
+- **WHEN** a visitor opens `/es/` or `/es/cv/`
+- **THEN** the corresponding Spanish portfolio or recruiter CV is served with complete audience-specific content in served markup
 
 #### Scenario: Both pages work without JavaScript
 
-- **WHEN** either entry point is loaded with JavaScript unavailable
+- **WHEN** any entry point is loaded with JavaScript unavailable
 - **THEN** its section content and navigation remain present in the served markup
 
 ### Requirement: Shared design and verified facts
 
-Both entry points SHALL use the same design tokens, stylesheet collection, image assets, and verified profile facts. Visible claims SHALL be supported by existing real project, skill, experience, certification, or language data. The site SHALL NOT add rates, testimonials, booking links, or process claims that lack a verified source.
+All four entry points SHALL use the same design tokens, stylesheet collection, image assets, and verified profile facts. Spanish variants SHALL translate presentation copy without changing the underlying claims. Visible claims SHALL be supported by existing real project, skill, experience, certification, or language data. The site SHALL NOT add rates, testimonials, booking links, or process claims that lack a verified source.
 
 #### Scenario: Shared visual system
 
-- **WHEN** both entry points are rendered
+- **WHEN** all four entry points are rendered
 - **THEN** they use the same Material 3 token values, section styles, and local image assets
 
 #### Scenario: Verified claims only
 
-- **WHEN** copy on either entry point is reviewed
+- **WHEN** copy on any entry point is reviewed
 - **THEN** every project, skill, role, certification, and language claim is supported by existing verified data
 
 ### Requirement: Audience-specific navigation and calls to action
 
-The portfolio page SHALL prioritize hero, a client-facing services menu, selected work, technical skills, a discreet background-experience reveal, and a project-discussion contact path. Its header SHALL include a "Services" navigation link targeting the services section. Its hero SHALL NOT present the vacancy comparison control or LinkedIn option, and its header SHALL NOT present the download-resume control. The recruiter page SHALL prioritize vacancy comparison, technical skills, work history, projects, certifications, communication details, and CV download. The portfolio page SHALL include a discoverable cross-link to the recruiter page. The recruiter page SHALL NOT include a Portfolio menu item, Services menu item, or footer cross-link.
+Each portfolio variant SHALL prioritize hero, a client-facing services menu, selected work, technical skills, a discreet background-experience reveal, and a project-discussion contact path. Its header SHALL include a localized Services link targeting the services section. Its hero SHALL NOT present the vacancy comparison control or LinkedIn option, and its header SHALL NOT present the download-resume control. Each recruiter variant SHALL prioritize vacancy comparison, technical skills, work history, projects, certifications, communication details, and CV download. Each portfolio variant SHALL include a discoverable cross-link to the matching-locale recruiter page. Each recruiter variant SHALL NOT include a Portfolio menu item, Services menu item, or footer cross-link. Every page SHALL include a header language link to the same audience in the other locale.
 
 #### Scenario: Portfolio call to action
 
-- **WHEN** a visitor reviews the portfolio page
-- **THEN** the primary contact action invites a project discussion and no vacancy comparison entry point is presented
+- **WHEN** a visitor reviews either portfolio page
+- **THEN** the primary contact action invites a project discussion in that locale and no vacancy comparison entry point is presented
 
 #### Scenario: Portfolio services navigation
 
-- **WHEN** a visitor activates the "Services" navigation link on the portfolio page
+- **WHEN** a visitor activates the localized Services navigation link on a portfolio page
 - **THEN** the Services section is brought into view
 
 #### Scenario: Portfolio hero and header controls
 
-- **WHEN** the portfolio hero and header are inspected
+- **WHEN** either portfolio hero and header are inspected
 - **THEN** no LinkedIn option, vacancy-match control, or download-resume control is presented
 
 #### Scenario: Recruiter call to action
 
-- **WHEN** a visitor reviews the recruiter page
-- **THEN** vacancy comparison, LinkedIn, and CV download actions are available
+- **WHEN** a visitor reviews either recruiter page
+- **THEN** vacancy comparison, LinkedIn, and CV download actions are available in that locale
 
 #### Scenario: Cross-page discovery
 
-- **WHEN** a visitor needs the recruiter view from the portfolio
-- **THEN** a cross-link to `/cv/` is discoverable from the portfolio page
+- **WHEN** a visitor needs the recruiter view from a portfolio page
+- **THEN** a cross-link to the matching-locale recruiter page is discoverable from that portfolio page
 
 #### Scenario: Recruiter page has no portfolio cross-link
 
-- **WHEN** the recruiter page is inspected
-- **THEN** no menu or footer link to the portfolio page is presented and no Services menu item is presented
+- **WHEN** either recruiter page is inspected
+- **THEN** no menu or footer link to a portfolio page is presented and no Services menu item is presented
+
+#### Scenario: Same-audience language link
+
+- **WHEN** a visitor activates the header language link on any page
+- **THEN** the browser opens the same audience variant in the other locale without changing audience
 
 ### Requirement: Progressive background experience reveal
 
-The portfolio page SHALL omit communication/languages, certifications, and interests. It SHALL place a discreet "Background experience" control after technical skills and keep the experience section in served HTML. Without JavaScript the experience section SHALL be visible. With JavaScript available the experience section SHALL be collapsible and revealable in place, with the control exposing its expanded or collapsed state to assistive technology.
+Each portfolio variant SHALL omit communication/languages, certifications, and interests. It SHALL place a discreet localized background-experience control after technical skills and keep the experience section in served HTML. Without JavaScript the experience section SHALL be visible. With JavaScript available the experience section SHALL be collapsible and revealable in place, with the control exposing its expanded or collapsed state to assistive technology.
 
 #### Scenario: Portfolio section set
 
-- **WHEN** the portfolio page is inspected
-- **THEN** communication/languages, certifications, and interests are absent and experience is available only after the background-experience control in the enhanced view
+- **WHEN** either portfolio page is inspected
+- **THEN** communication/languages, certifications, and interests are absent and experience is available only after the localized background-experience control in the enhanced view
 
 #### Scenario: JavaScript unavailable
 
-- **WHEN** the portfolio page loads without JavaScript
+- **WHEN** either portfolio page loads without JavaScript
 - **THEN** the experience section is visible without requiring the reveal control
 
 #### Scenario: Reveal in place
 
-- **WHEN** a visitor activates the "Background experience" control with JavaScript available
+- **WHEN** a visitor activates the localized background-experience control with JavaScript available
 - **THEN** the experience section is shown or hidden in place and the control's exposed state matches the visible state
 
 ### Requirement: Single-repository deployment
 
-Both entry points SHALL be published from the same repository and Pages deployment. Shared assets SHALL resolve correctly from both root and nested paths. Adding the recruiter entry point SHALL NOT require a second repository, a build step, or a runtime dependency.
+All four entry points and the Spanish CV PDF SHALL be published from the same repository and Pages deployment. Shared assets SHALL resolve correctly from root and nested paths. Adding the Spanish variants SHALL NOT require a second repository, a build step, a runtime translation service, or a runtime dependency.
 
 #### Scenario: Published entry points
 
 - **WHEN** the site is deployed
-- **THEN** both `/` and `/cv/` are reachable from the published artifact
+- **THEN** `/`, `/cv/`, `/es/`, and `/es/cv/` are reachable from the published artifact
 
 #### Scenario: Shared asset resolution
 
-- **WHEN** either entry point loads its styles, scripts, and images
+- **WHEN** any entry point loads its styles, scripts, and images
 - **THEN** every shared asset URL resolves from that page's base path
+
+#### Scenario: Spanish CV download
+
+- **WHEN** a visitor activates the CV download action on `/es/cv/`
+- **THEN** the provided Spanish PDF is downloaded while `/cv/` continues to use the existing English PDF
+
+### Requirement: Locale-specific presentation
+
+The site SHALL serve Spanish variants of both audience entry points using Mexican Spanish that preserves all verified facts. English variants SHALL remain the global-market versions. Each page SHALL declare its own language and expose alternate locale links for the same audience through standard HTML metadata. Spanish copy SHALL use a direct `tú` tone on the portfolio and a neutral/formal tone on the recruiter CV, while established technology names and product names remain unchanged.
+
+#### Scenario: Spanish locale identity
+
+- **WHEN** a Spanish entry point is served
+- **THEN** its document language is `es-MX` and its visible copy is Mexican Spanish
+
+#### Scenario: Locale metadata
+
+- **WHEN** an English or Spanish entry point is inspected
+- **THEN** it exposes alternate language metadata for the matching audience in the other locale
+
+#### Scenario: Verified localization
+
+- **WHEN** Spanish copy is reviewed
+- **THEN** every project, skill, role, certification, language, and technology claim matches the verified facts used by the English variant
+
+#### Scenario: English pages remain unchanged
+
+- **WHEN** an English entry point is served after this change
+- **THEN** its language, copy, audience behavior, and actions remain unchanged

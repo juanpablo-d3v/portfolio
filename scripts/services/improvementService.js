@@ -1,5 +1,10 @@
 import { portfolioProfile, serializeProfile } from '../data/cvProfile.js';
-import { SERVICE_NAMES, getServiceByName, serviceCatalog } from '../data/serviceCatalog.js';
+import {
+  SERVICE_NAMES,
+  getServiceByName,
+  serializeServiceCatalog,
+  serviceCatalog,
+} from '../data/serviceCatalog.js';
 import { GeminiRequestError, requestStructuredContent } from './geminiRequest.js';
 
 const MAX_IMPROVEMENT_LENGTH = 1200;
@@ -96,8 +101,16 @@ function boundedText(value, maxLength, fieldName) {
   return text;
 }
 
-export function buildImprovementPrompt(goal) {
+export function buildImprovementPrompt(goal, options = {}) {
+  const locale = options.locale === 'es' ? 'es' : 'en';
+  const localeInstruction =
+    locale === 'es'
+      ? 'Write all visitor-facing result text in Mexican Spanish using a friendly tú tone. Keep canonical service IDs in English exactly as provided.'
+      : '';
+  const catalog = locale === 'es' ? serializeServiceCatalog('es') : serviceCatalog;
+
   return [
+    ...(localeInstruction ? [localeInstruction] : []),
     'You help a visitor decide which of four offered service categories best fits a goal they described.',
     'Choose exactly one category from the approved list.',
     'Use only the approved service catalog and portfolio profile below as context.',
@@ -107,7 +120,7 @@ export function buildImprovementPrompt(goal) {
     'benefitKeys must contain one to three keys from the selected catalog entry. clarifyingQuestions must contain one to three short questions the visitor can answer in the email they send after receiving this result; do not ask the visitor to start another inquiry to answer them. suggestedFirstStep must be one sentence.',
     '',
     'Approved service catalog:',
-    JSON.stringify(serviceCatalog),
+    JSON.stringify(catalog),
     '',
     'Portfolio profile:',
     serializeProfile(portfolioProfile),
@@ -209,7 +222,7 @@ export async function improveGoal(goal, options = {}) {
 
   try {
     const resultText = await requestStructuredContent({
-      prompt: buildImprovementPrompt(text),
+      prompt: buildImprovementPrompt(text, options),
       schema: RESULT_SCHEMA,
       temperature: 0.2,
       maxOutputTokens: 700,

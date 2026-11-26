@@ -40,8 +40,14 @@ export function verdictFromScore(score) {
   return 'weak';
 }
 
-export function buildPrompt(vacancyText) {
+export function buildPrompt(vacancyText, options = {}) {
+  const localeInstruction =
+    options.locale === 'es'
+      ? 'Write matchedSkills, gaps, and rationale in Mexican Spanish with neutral professional wording. Keep canonical verdict values exactly as provided.'
+      : '';
+
   return [
+    ...(localeInstruction ? [localeInstruction, ''] : []),
     'You are evaluating how well a candidate profile matches a job vacancy.',
     'Score only evidence that is explicitly present in the candidate profile.',
     'When the vacancy states a role, seniority, or must-have skills, extract them from the vacancy text and use them as the evaluation criteria.',
@@ -114,7 +120,7 @@ export async function compareVacancy(vacancyText, options = {}) {
 
   try {
     const resultText = await requestStructuredContent({
-      prompt: buildPrompt(text),
+      prompt: buildPrompt(text, { locale: options.locale }),
       schema: RESULT_SCHEMA,
       temperature: 0.2,
       maxOutputTokens: 800,
