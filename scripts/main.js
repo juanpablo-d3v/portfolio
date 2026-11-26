@@ -36,6 +36,17 @@ class App {
       new JobMatchModal();
     }
 
+    const improvementDialog = document.getElementById('improvement-dialog');
+
+    if (
+      improvementDialog &&
+      typeof improvementDialog.showModal === 'function' &&
+      typeof improvementDialog.close === 'function'
+    ) {
+      const { default: ImprovementDialog } = await import('./components/improvementDialog.js');
+      new ImprovementDialog();
+    }
+
     console.log('[JP-DEV] CV Landing Page initialized');
   }
 }

@@ -202,7 +202,7 @@
                         <h3>Not sure where to start? Tell me what you want to improve.</h3>
                         <p>No technical jargon or formal specs required — let's have a quick, practical chat about your goals.</p>
                     </div>
-                    <a class="services-cta-button" href="mailto:hello@juanpablo.dev?subject=Improvement%20Inquiry">
+                    <a class="services-cta-button" data-improvement-open href="mailto:hello@juanpablo.dev?subject=Improvement%20Inquiry">
                         <span class="material-symbols-outlined" aria-hidden="true">chat</span>
                         <span>Tell Me What to Improve</span>
                     </a>
@@ -569,6 +569,89 @@
             <p class="footer-text">© 2024 JuanPablo Dev. Designed with Precision Architecture.</p>
         </div>
     </footer>
+
+    <dialog id="improvement-dialog" class="improvement-dialog" aria-labelledby="improvement-title">
+        <div class="improvement-dialog-header">
+            <div>
+                <h2 id="improvement-title">Tell Me What to Improve</h2>
+                <p class="improvement-subtitle">Describe the problem in plain language and see which service may help.</p>
+            </div>
+            <button type="button" class="improvement-close" data-improvement-close
+                aria-label="Close improvement inquiry">
+                <span class="material-symbols-outlined" aria-hidden="true">close</span>
+            </button>
+        </div>
+
+        <div id="improvement-view-input" class="improvement-view">
+            <p id="improvement-privacy" class="improvement-privacy">
+                The text you enter is sent to Google AI for improvement guidance. This page does not store it.
+            </p>
+
+            <form id="improvement-form" class="improvement-form" novalidate>
+                <label class="improvement-label" for="improvement-input">What would you like to improve?</label>
+                <textarea id="improvement-input" name="improvement" class="improvement-input" rows="8"
+                    maxlength="1200" required aria-describedby="improvement-privacy improvement-counter improvement-error"
+                    placeholder="For example:&#10;Our booking requests are handled by email and people miss details.&#10;We need a clearer way to submit requests and see their status."></textarea>
+                <span id="improvement-counter" class="improvement-counter" aria-live="polite">0 / 1200</span>
+                <p id="improvement-error" class="improvement-error" role="alert" hidden></p>
+                <div class="improvement-actions">
+                    <button type="submit" class="improvement-submit" data-improvement-submit>Find the right service</button>
+                    <a class="improvement-secondary" href="mailto:hello@juanpablo.dev?subject=Improvement%20Inquiry">Email me instead</a>
+                </div>
+            </form>
+
+            <div id="improvement-fallback" class="improvement-fallback" role="alert" hidden>
+                <p id="improvement-fallback-message"></p>
+                <div class="improvement-actions">
+                    <a class="improvement-submit-link" href="mailto:hello@juanpablo.dev?subject=Improvement%20Inquiry">Email me</a>
+                    <button type="button" class="improvement-secondary-button" data-improvement-retry
+                        aria-disabled="true">Retry</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="improvement-view-loading" class="improvement-view" hidden>
+            <div class="improvement-loading">
+                <span class="improvement-spinner" aria-hidden="true"></span>
+                <p id="improvement-loading-message" tabindex="-1">Finding the closest service...</p>
+            </div>
+        </div>
+
+        <section id="improvement-view-result" class="improvement-result improvement-view" hidden
+            aria-labelledby="improvement-result-title">
+            <h3 id="improvement-result-title" tabindex="-1">A practical place to start</h3>
+            <p id="improvement-understood-goal" class="improvement-goal"></p>
+
+            <div class="improvement-service-summary">
+                <h4 id="improvement-primary-service"></h4>
+                <p id="improvement-why-fits"></p>
+            </div>
+
+            <div class="improvement-result-block">
+                <h4>Relevant benefits</h4>
+                <ul id="improvement-benefits" class="improvement-list"></ul>
+            </div>
+
+            <div class="improvement-result-block">
+                <h4>Questions to answer in your email</h4>
+                <p id="improvement-questions-note" class="improvement-note">Answer any that apply in the email you send; no new inquiry is needed.</p>
+                <ul id="improvement-questions" class="improvement-list"></ul>
+            </div>
+
+            <div class="improvement-result-block">
+                <h4>Suggested first step</h4>
+                <p id="improvement-first-step"></p>
+            </div>
+
+            <div class="improvement-actions improvement-result-actions">
+                <a id="improvement-email-brief" class="improvement-submit-link"
+                    href="mailto:hello@juanpablo.dev?subject=Improvement%20Inquiry">Email this brief</a>
+                <button type="button" class="improvement-return" data-improvement-another>Start another inquiry</button>
+            </div>
+        </section>
+
+        <p id="improvement-status" class="improvement-status" aria-live="polite"></p>
+    </dialog>
 
     <!-- Main JavaScript Entry Point -->
     <script type="module" src="./scripts/main.js"></script>
