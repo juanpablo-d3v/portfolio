@@ -11,6 +11,7 @@
     <link rel="alternate" hreflang="en" href="./">
     <link rel="alternate" hreflang="es-MX" href="./es/">
     <link rel="alternate" hreflang="x-default" href="./">
+    <script src="./scripts/utils/localeBootstrap.js"></script>
 
     <!-- Google Fonts: Merriweather Sans -->
     <link href="https://fonts.googleapis.com/css2?family=Merriweather+Sans:wght@300;400;500;600;700;900&display=swap"
@@ -38,6 +39,14 @@
                 <a href="#projects">Projects</a>
                 <a href="#skills">Technical Skills</a>
             </nav>
+            <details class="mobile-nav" aria-label="Portfolio navigation menu">
+                <summary class="mobile-nav-summary" aria-label="Menu">Menu</summary>
+                <nav class="mobile-nav-panel" role="navigation" aria-label="Portfolio Navigation">
+                    <a href="#services">Services</a>
+                    <a href="#projects">Projects</a>
+                    <a href="#skills">Technical Skills</a>
+                </nav>
+            </details>
             <div class="header-icons" role="group" aria-label="Share">
                 <a class="header-lang-link" href="./es/" hreflang="es-MX" lang="es" aria-label="Spanish version">ES</a>
                 <span class="material-symbols-outlined" data-icon="share" aria-label="Share" role="button"
@@ -227,7 +236,7 @@
 
                 <div class="projects-grid">
                     <article class="project-card">
-                        <img class="project-card-bg" src="images/projects/project-placeholder.svg" alt=""
+                        <img class="project-card-bg" src="images/projects/fresnal.png" alt=""
                             loading="lazy" decoding="async" width="1200" height="400">
                         <div class="project-card-content">
                             <div class="project-meta">
