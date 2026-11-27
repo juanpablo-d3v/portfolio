@@ -29,7 +29,7 @@ class IconHandler {
     const iconType = (icon.getAttribute('data-icon') || icon.textContent || '').trim();
     switch (iconType) {
       case 'mail':
-        window.location.href = 'mailto:hello@juanpablo.dev';
+        window.location.href = 'mailto:juanpablod3v@gmail.com';
         break;
       case 'share':
         this.shareProfile();
@@ -41,10 +41,10 @@ class IconHandler {
     const iconType = icon.getAttribute('title') || icon.textContent;
     switch (iconType) {
       case 'LinkedIn':
-        this.openExternalLink('https://linkedin.com');
+        this.openExternalLink('https://mx.linkedin.com/in/juan-pablo-solorzano/');
         break;
       case 'GitHub':
-        this.openExternalLink('https://github.com');
+        this.openExternalLink('https://github.com/juanpablo-d3v');
         break;
     }
   }

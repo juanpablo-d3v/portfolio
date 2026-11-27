@@ -18,7 +18,7 @@ Each portfolio page SHALL offer a client-facing improvement inquiry from the Ser
 #### Scenario: No-JavaScript contact path
 
 - **WHEN** either portfolio page is loaded with JavaScript unavailable and the visitor activates the localized call to action
-- **THEN** the visitor's email client opens an improvement inquiry to `hello@juanpablo.dev` with the locale-appropriate subject
+- **THEN** the visitor's email client opens an improvement inquiry to `juanpablod3v@gmail.com` with the locale-appropriate subject
 
 #### Scenario: Recruiter page unchanged
 
@@ -117,7 +117,7 @@ The result view SHALL present only approved benefit statements from the selected
 
 ### Requirement: Result prepares an email brief without sending automatically
 
-The result view SHALL offer a control that opens an email to `hello@juanpablo.dev` with a subject of `Improvement Inquiry` on the English portfolio and `Consulta de mejora` on the Spanish portfolio. The body SHALL contain the visitor's submitted text, understood goal, localized primary service label, reason, approved benefits, clarifying questions framed as questions to answer in that email, and suggested first step. The body SHALL NOT contain a proof section. The page SHALL NOT send email automatically.
+The result view SHALL offer a control that opens an email to `juanpablod3v@gmail.com` with a subject of `Improvement Inquiry` on the English portfolio and `Consulta de mejora` on the Spanish portfolio. The body SHALL contain the visitor's submitted text, understood goal, localized primary service label, reason, approved benefits, clarifying questions framed as questions to answer in that email, and suggested first step. The body SHALL NOT contain a proof section. The page SHALL NOT send email automatically.
 
 #### Scenario: Email-ready brief
 
@@ -156,7 +156,7 @@ The result view SHALL provide a control to start another inquiry and an email-br
 #### Scenario: Direct email fallback outside the result
 
 - **WHEN** the input or failure view is shown
-- **THEN** the visitor can start an email to `hello@juanpablo.dev` with the locale-appropriate subject without requiring another AI request
+- **THEN** the visitor can start an email to `juanpablod3v@gmail.com` with the locale-appropriate subject without requiring another AI request
 
 ### Requirement: AI failures degrade without inventing a result
 
@@ -217,7 +217,7 @@ On the Spanish portfolio, all visitor-facing improvement-inquiry strings SHALL b
 #### Scenario: Spanish email brief
 
 - **WHEN** a visitor activates the Spanish email brief control after a successful result
-- **THEN** the email client opens a message to `hello@juanpablo.dev` with subject `Consulta de mejora` and a body containing the displayed Spanish result content
+- **THEN** the email client opens a message to `juanpablod3v@gmail.com` with subject `Consulta de mejora` and a body containing the displayed Spanish result content
 
 #### Scenario: English inquiry unchanged
 
