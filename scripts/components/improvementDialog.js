@@ -8,7 +8,7 @@ import {
 
 const COOLDOWN_MS = 20000;
 const COOLDOWN_KEY = 'jp-improvement-match-last-submit';
-const EMAIL_ADDRESS = 'hello@juanpablo.dev';
+const EMAIL_ADDRESS = 'juanpablod3v@gmail.com';
 
 class ImprovementDialog {
   constructor() {
