@@ -70,11 +70,21 @@ web-cv/
   `main.js` is the only place that instantiates them.
 - **CSS is section-scoped.** Add or edit a section's styles in its own file
   under `styles/`; `style.css` only lists imports (order matters: tokens first,
-  responsive overrides and utilities last).
+  utilities and dialog styles next, responsive overrides last).
 - **No external dependencies.** Keep everything browser-native.
-- **Project imagery is swappable.** Replace `images/projects/project-placeholder.svg` in the project cards with real local images and verified copy; no JavaScript or dependency changes are needed.
+- **Responsive bands.** Shared layout rules live in `styles/responsive.css`
+  with explicit groups at 640px, 768px, 1024px, and 1280px; keep new
+  breakpoint rules in that final layer.
+- **Mobile navigation.** Each entry point includes a localized native
+  `<details>`/`<summary>` disclosure anchored at the right side of the header
+  row with audience-specific section links; links work without JavaScript, and
+  `scripts/nav.js` closes the disclosure after in-page navigation when
+  JavaScript is available.
+- **Project imagery is swappable.** Replace `images/projects/fresnal.png` in the project cards with real local images and verified copy; no JavaScript or dependency changes are needed.
 - **Four entry points, one asset set.** Keep visible HTML in `index.html`, `cv/index.html`, `es/index.html`, and `es/cv/index.html`; share all styles, scripts, images, and PDFs from the root folders.
 - **Same-audience language links.** Keep `/` ↔ `/es/` and `/cv/` ↔ `/es/cv/` links in the header; do not switch audience from the language control.
+- **Browser-language defaults.** On a fresh visit with JavaScript available, `/` and `/cv/` may open the matching Spanish entry point when the visitor's ordered browser languages select Spanish first. English and unsupported languages stay on the English entry point; `/es/` and `/es/cv/` never redirect.
+- **Explicit language choice.** Header language links store the selected locale as an explicit preference that overrides browser-language detection on later visits. Without JavaScript, visitors remain on the requested entry point.
 - **One-way discovery per locale.** The portfolio footers link to `/cv/` and `/es/cv/`; recruiter pages intentionally have no Portfolio menu or footer link.
 - **Recruiter project framing.** On `/cv/` and `/es/cv/`, projects come after experience and are presented as side projects or learning experiments, not concurrent commercial work.
 - **Audience-specific data.** Use the `candidateProfile` variant for recruiter AI comparison and `portfolioProfile` for any future portfolio-side feature; shared facts come from one module.

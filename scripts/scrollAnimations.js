@@ -4,7 +4,10 @@ class ScrollAnimations {
   }
 
   initializeScrollAnimations() {
-    // Intersection Observer for fade-in animations when elements come into view
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      return;
+    }
+
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {

@@ -2,7 +2,7 @@
    style.css - Main stylesheet entry point
    Imports modular per-section stylesheets.
    Order matters: base tokens/reset first,
-   responsive overrides and utilities last.
+   responsive overrides last.
    ============================================ */
 @import url('./base.css');
 @import url('./header.css');
@@ -16,7 +16,7 @@
 @import url('./certifications.css');
 @import url('./interests.css');
 @import url('./footer.css');
-@import url('./responsive.css');
 @import url('./utilities.css');
 @import url('./job-match.css');
 @import url('./improvement-dialog.css');
+@import url('./responsive.css');
